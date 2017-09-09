@@ -143,13 +143,13 @@ class MonoBookTemplate extends QuickTemplate {
             }
             $msg = str_replace(' ','&nbsp;',htmlspecialchars(wfMsg($innerText)));
             $value .= "<li id=\"menu-{$innerText}\"><a href=\"".
-               (substr($innerTarget, 0, 1) === "/" ? $innerTarget : $this->getLocalUrl($innerTarget)).
+               (substr($innerTarget, 0, 1) === "/" || substr($innerTarget, 0, 4) === "http" ? $innerTarget : $this->getLocalUrl($innerTarget)).
                "\">$msg</a></li>";
          }
          $value .= "</ul>";
       }
       else {
-         $value .= "<a href=\"".(substr($target, 0, 1) === "/" ? $target : $this->getLocalUrl($target))."\">$msg</a>";
+         $value .= "<a href=\"".(substr($target, 0, 1) === "/" || substr($target, 0, 4) === "http" ? $target : $this->getLocalUrl($target))."\">$msg</a>";
       }
       $value .= "</li>";
       return $value;
@@ -183,7 +183,7 @@ END;
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xml:lang="<?php $this->text('lang') ?>" lang="<?php $this->text('lang') ?>" dir="<?php $this->text('dir') ?>">
   <?php
-  global $wgTitle, $wgUser, $wgUseGoogleAnalytics, $wgOut, $wgScriptPath, $wgArticle, $wgRequest;
+  global $wgTitle, $wgUser, $wgUseGoogleAnalytics, $wgOut, $wgScriptPath, $wgArticle, $wgRequest, $wrProtocol;
 
   $now = wfTimestampNow(); // WERELATE
   $sk = $wgUser->getSkin();
@@ -235,7 +235,7 @@ END;
             'talkpage' => ($wgUser->isLoggedIn() ? 'User_talk:' . urlencode($wgUser->getName()) : 'Special:Userlogin'), 
             'trees' => 'Special:Trees',
             'showduplicates' => ($wgUser->isLoggedIn() ? 'Special:ShowDuplicates/' . urlencode($wgUser->getName()) : 'Special:Userlogin'), 
-            '-launchfte' => '/fte'
+            '-launchfte' => $wrProtocol.'://www.werelate.org/fte'
         ),
         'admin' => array(
             'recentchanges' => 'Special:Recentchanges',
@@ -281,7 +281,7 @@ END;
 //   jstorage.min.1.js separator.js
 ?>
    <script type="text/javascript">var addthis_config = {pubid: 'ra-4dac29732a79195f', services_exclude: 'print'};</script>
-   <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#acync=1"></script>
+   <script type="text/javascript" src="https://s7.addthis.com/js/250/addthis_widget.js#acync=1"></script>
    <script type="<?php $this->text('jsmimetype') ?>" src="<?php $this->text('stylepath' ) ?>/common/wikibits.yui.30.js"></script>
 <!-- Head Scripts -->
 <?php $this->html('headscripts') ?>
@@ -452,7 +452,7 @@ END;
                <?php
                if ($mainPage) {
                ?><div id="awards"><?php
-                  //echo wfMsg('awards');
+                  echo wfMsg('awards');
                ?></div><?php
                }
                else if (false && $wgUser->getOption('wrnoads') < $now) { // don't show this ad
